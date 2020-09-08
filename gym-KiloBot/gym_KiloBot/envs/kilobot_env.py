@@ -7,7 +7,7 @@ import cv2
 class KiloBotEnv(gym.Env):
     metadata={'render.modes':['human']}
 
-    def __init__(self):
+    def __init__(self,n=10):
         pass
 
     def step(self,action):
