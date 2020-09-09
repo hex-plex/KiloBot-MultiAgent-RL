@@ -13,6 +13,7 @@ class KiloBotEnv(gym.Env):
     pygame.init()
     def __init__(self,n=5,objective="graph",module_color=(0,255,0),radius=5,screen_width=250,screen_heigth=250):
         super().__init__()     ##Check it  once never used before
+        self.n = n
         self.modules = []
         if objective=="localization":
             self.obj = True
@@ -35,6 +36,12 @@ class KiloBotEnv(gym.Env):
                                     screen_heigth=self.screen_heigth)
                                     )
         self.clock = pygame.time.Clock()
+        self.action_space = spaces.Box(low = np.array([[0,0]]*self.n ,dtype=np.float32) ,
+                                        high=np.array([[self.radius, 2*np.pi]]*self.n, dtype=np.float32))
+        ### This will change with respect to output if its the histogram or the graph or the localization###
+        ####################################################################################################
+        self.observation_space = spaces.Box(low = np.array([[0, 0, 0]]*self.n ,dtype=np.float32),
+                                            high = np.array([[self.screen_width, self.screen_heigth, 2*np.pi ]]*self.n , dtype=np.float32))
 
     def fetch_histogram(self,states):
         pass
@@ -59,9 +66,8 @@ class KiloBotEnv(gym.Env):
         else:
             pass ## Draw the relationship joints also
         done = False
-        info={}
         critic_input = np.array(pygame.PixelArray(self.screen),dtype=np.uint8).T.reshape([self.screen_width,self.screen_heigth,1])
-        observation = [states,critic_input]
+        info = {"critic_input":critic_input}
         return states,reward,done,info
 
 
