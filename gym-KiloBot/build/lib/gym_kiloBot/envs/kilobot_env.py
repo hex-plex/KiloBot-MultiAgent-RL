@@ -4,7 +4,7 @@ from gym.utils import seeding
 import pygame
 import numpy as np
 import cv2
-from kiloBot import KiloBot
+from .kiloBot import KiloBot
 import os
 
 class KiloBotEnv(gym.Env):

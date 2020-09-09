@@ -1,10 +1,10 @@
 import pygame
-from random import radint
+from random import randint
 import numpy as np
 BLACK = (0,0,0)
 class KiloBot(pygame.sprite.Sprite):
 
-    def __init__(self,color,radius,xinit=None,yinit=None,theta=None,screen_width,screen_heigth):
+    def __init__(self,color,radius,xinit=None,yinit=None,theta=None,screen_width=250,screen_heigth=250):
         super().__init__()
         self.image = pygame.Surface([2*radius,2*radius])
         self.image.fill(BLACK)
