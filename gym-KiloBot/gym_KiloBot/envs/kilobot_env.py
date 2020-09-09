@@ -34,6 +34,7 @@ class KiloBotEnv(gym.Env):
                                     screen_width=self.screen_width,
                                     screen_heigth=self.screen_heigth)
                                     )
+        self.clock = pygame.time.Clock()
 
     def fetch_histogram(self,states):
         pass
@@ -42,6 +43,8 @@ class KiloBotEnv(gym.Env):
         pass
 
     def step(self,actions):
+        if not pygame.display.get_init():
+            raise Exception("Some problem in the rendering contiivity of the code OpenAI Wrapper messing it up!")
         states=[]
         reward = 0
         self.screen.fill(self.BLACK)
@@ -64,10 +67,18 @@ class KiloBotEnv(gym.Env):
 
     def reset(self):
         self.screen.fill(self.BLACK)
+        if not pygame.display.get_init():
+            pygame.display.init()
         for module in modules:
             module.spawn()
         if self.obj:
             self.target = (np.random.randint(self.radius,self.screen_width-self.radius),np.random.randint(self.radius,self.screen_heigth-self.radius))
             pygame.draw.circle(self.screen,self.BLUE,self.target)
     def render(self,mode='human',close=False):
-        pass
+        pygame.display.flip()
+        if mode=="human":
+            self.clock.tick(60)
+
+    def close(self):
+        pygame.display.quit()
+        return True
