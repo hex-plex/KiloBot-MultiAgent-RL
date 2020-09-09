@@ -1,4 +1,5 @@
 import pygame
+from random import randint
 import numpy as np
 BLACK = (0,0,0)
 class KiloBot(pygame.sprite.Sprite):
@@ -8,6 +9,7 @@ class KiloBot(pygame.sprite.Sprite):
         self.image = pygame.Surface([2*radius,2*radius])
         self.image.fill(BLACK)
         self.radius = radius
+        self.theta = 0
         self.color = color
         self.screen_width = screen_width
         self.screen_heigth = screen_heigth

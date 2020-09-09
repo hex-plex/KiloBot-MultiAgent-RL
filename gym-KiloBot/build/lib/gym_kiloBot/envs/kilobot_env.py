@@ -75,7 +75,7 @@ class KiloBotEnv(gym.Env):
         self.screen.fill(self.BLACK)
         if not pygame.display.get_init():
             pygame.display.init()
-        for module in modules:
+        for module in self.modules:
             module.spawn()
         if self.obj:
             self.target = (np.random.randint(self.radius,self.screen_width-self.radius),np.random.randint(self.radius,self.screen_heigth-self.radius))
