@@ -1,6 +1,10 @@
 README.md
 setup.py
+gym_kiloBot/__init__.py
 gym_kiloBot.egg-info/PKG-INFO
 gym_kiloBot.egg-info/SOURCES.txt
 gym_kiloBot.egg-info/dependency_links.txt
 gym_kiloBot.egg-info/top_level.txt
+gym_kiloBot/envs/__init__.py
+gym_kiloBot/envs/kiloBot.py
+gym_kiloBot/envs/kilobot_env.py
