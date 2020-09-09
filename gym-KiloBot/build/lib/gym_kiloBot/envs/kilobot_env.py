@@ -58,7 +58,7 @@ class KiloBotEnv(gym.Env):
         for module,action in zip(self.modules,actions):
             reward -= 0.05 * module.update(action)
             states.append(module.get_state())
-            pygame.draw.rect(self.screen,module.color,module.rect)
+            pygame.draw.circle(self.screen,module.color,module.rect)
             ## Draw a arrow for the same
             ## Draw A circle around it and draw the Region of interest
         if self.obj:
