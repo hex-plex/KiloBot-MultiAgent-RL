@@ -5,11 +5,11 @@ import cv2
 
 def test1():
     print("This should run the env with out any render")
-    env = gym.make("kiloBot-v0",n=5,render=False)
+    env = gym.make("kiloBot-v0",n=10,screen_width=500,screen_heigth=500,render=False)
     env.reset()
     a = env.dummy_action(0.1,5)
     for i in range(1000):
-        _,_,_,o=env.step([a]*5)
+        _,_,_,o=env.step([a]*env.n)
         out = o['critic_input']
         cv2.imshow("asdf",out)
         cv2.waitKey(10)
@@ -23,15 +23,15 @@ def test1():
 
 def test2():
     print("This should run the env with render")
-    env = gym.make("kiloBot-v0")
+    env = gym.make("kiloBot-v0",n=10,screen_width=500,screen_heigth=500,radius=5)
     env.reset()
     a = env.dummy_action(0.1,5)
     for i in range(1000):
-        env.step([a]*5);env.render();
+        env.step([a]*env.n);env.render();
         if i%100==0:
             env.reset()
             time.sleep(0.05)
-        time.sleep(0.1)
+        time.sleep(0.01)
     env.reset()
     env.close()
     time.sleep(0.2)

@@ -9,12 +9,14 @@ class KiloBot(pygame.sprite.Sprite):
         self.image = pygame.Surface([2*radius,2*radius])
         self.image.fill(BLACK)
         self.radius = radius
-        self.theta = 0
+        self.theta = theta
         self.color = color
         self.screen_width = screen_width
         self.screen_heigth = screen_heigth
         pygame.draw.circle(self.image, self.color,(self.radius,self.radius),self.radius)
         self.rect = self.image.get_rect()
+        self.rect.x = xinit
+        self.rect.y = yinit
         if (xinit is None) or  (yinit is None) or (theta is None):
             self.spawn()
     def update(self,action):
@@ -32,3 +34,14 @@ class KiloBot(pygame.sprite.Sprite):
         self.rect.y = randint(0,self.screen_heigth-1)
         self.theta = 2*np.pi* np.random.random_sample()
         return True
+    def __sub__(self,other):
+        return KiloBot(color=self.color,
+                    radius=self.radius,
+                    xinit=(self.rect.x-other.rect.x),
+                    yinit=(self.rect.y-other.rect.y),
+                    theta = (self.theta-other.theta),
+                    screen_width=self.screen_width,
+                    screen_heigth=self.screen_heigth
+                    )
+    def norm(self):
+        return np.sqrt(self.rect.x**2 + self.rect.y**2)
