@@ -101,5 +101,6 @@ class KiloBotEnv(gym.Env):
             self.clock.tick(60)
 
     def close(self):
-        if pygame.display.get_init():
+        if self.render_mode:
             pygame.display.quit()
+        pygame.quit()

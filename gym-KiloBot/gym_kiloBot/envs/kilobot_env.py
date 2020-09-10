@@ -103,3 +103,4 @@ class KiloBotEnv(gym.Env):
     def close(self):
         if self.render_mode:
             pygame.display.quit()
+        pygame.quit()
