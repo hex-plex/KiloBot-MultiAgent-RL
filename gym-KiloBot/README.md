@@ -4,7 +4,7 @@ This is a environment which tries simulate many modular bots named kiloBot s , t
 
 ### Requirements
 ``` bash
-pip install --upgrade setuptools wheel numpy gym opencv-python pygame 
+pip install --upgrade setuptools wheel numpy gym opencv-python pygame
 ```
 ### Installation
 Run commands in this exact directory.
@@ -21,8 +21,13 @@ import gym_kiloBot
 
 env = gym.make('kiloBot-v0',
         n=5,                    ## No of modules to be initiated
-        objective = "graph"     ## This specifics the task can also be "localization"
+        k=5,                    ## The no of steps for histogram
+        objective = "graph",    ## This specifics the task can also be "localization"
         render=True,            ## If Passed through initializes a pygame display for output
+        dupper = None,          ## This sets the upper limit of distance to be cosidered
+        dlower = None,          ## This sets the lower limit of the same
+        dthreshold = None,      ## This sets thresholding value and above three arguements are supposed to be numbers
+        sigma = None ,          ## This sets sigma for radial basis function
         module_color=(0,255,0), ## This sets the color of each module
         radius = 5 ,            ## This sets the size of each module
         screen_width = 250,     ## Sets the width of the output
@@ -39,8 +44,8 @@ actions = [action]*n
 observation, reward, done, info = env.step(actions)
 output = info['critic_input']
 ```
-- observation is a vector of histograms for each modules for the graph task and is vector of distances for each modules from the target for the localization task.<br/>
-- info contains a item with key 'critic_input' which contains the image that critic wants, so that headless training is possible.
+- observation is a vector of histograms for each modules for the graph task and is vector of distances for each modules from the target for the localization task. **output array of shape:- (n,k)**<br/>
+- info contains a item with key *'critic_input'* which contains the image that critic wants, so that headless training is possible.
 - reward is based on the objective choosen refer the paper for that
 - done its a continuing task so taking a break and reseting periodically is the best thing to do to sample as many states as posiible.
 
