@@ -11,22 +11,33 @@ import os
 
 class KiloBotEnv(gym.Env):
     metadata={'render.modes':['human']}
-    BLACK=(0,0,0);WHITE=(255,255,255)
+    BLACK=(0,0,0);WHITE=(255,255,255);BLUE=(0,0,255);RED=(255,0,0)
     pygame.init()
-    def __init__(self,n=5,objective="graph",render=True,module_color=(0,255,0),radius=5,screen_width=250,screen_heigth=250):
+    def __init__(self,n=5,objective="graph",render=True,dupper=30,dlower=15,module_color=(0,255,0),radius=5,screen_width=250,screen_heigth=250):
         super().__init__()     ##Check it  once never used before
         self.n = n
         self.modules = []
         self.render_mode = render
+        self.target = (0,0)
         if objective=="localization":
             self.obj = True
+            self.target[0],self.target[1] = np.random.randint(0,screen_width-radius),np.random.randint(0,screen_heigth-radius)
         else:
             self.obj = False
         self.module_color = module_color
         self.screen_width = screen_width
         self.screen_heigth = screen_heigth
+        self.target_color = self.BLUE
+        self.relation_color = self.RED
+        self.relationship_color = (255,0,0)
         self.radius = radius
         self.dummy_action = Action ## This is a class not a object that is stored
+        self.module_queue = []
+        self.graph_reward = 0
+        self.target_reward = 0
+        self.dupper = dupper
+        self.dlower = dlower
+        self.dthreshold = 5*self.radius
         for i in range(n):
             self.modules.append(KiloBot(module_color,
                                     radius,
@@ -46,10 +57,17 @@ class KiloBotEnv(gym.Env):
                                             high = np.array([[self.screen_width, self.screen_heigth, 2*np.pi ]]*self.n , dtype=np.float32))
 
     def fetch_histogram(self,states):
-        pass
+        return True
 
-    def graph_obj_distances(self):
-        pass
+    def graph_obj_distances(self,states):
+        for i in range(self.n):
+            for j in range(i+1,self.n):
+                tempdst = (self.modules[i]-self.modules[j]).norm()
+                if tempdst<=self.dupper:
+                    self.module_queue.append([i,j,tempdst])
+                    if self.dlower<=tempdst:
+                        self.graph_reward += tempdst/10
+        return True
 
     def step(self,actions):
         if not pygame.display.get_init() and self.render_mode:
@@ -68,13 +86,26 @@ class KiloBotEnv(gym.Env):
                             module.theta)
             self.screen.blit(nar,(nrect.x,nrect.y))
             pygame.draw.circle(self.screen,(0,102,51),(module.rect.x,module.rect.y),5*self.radius,2)## Draw A circle around it and draw the Region of interest
+        self.graph_obj_distances(states)
         if self.obj:
-            pygame.draw.circle(self.screen,self.BLUE,self.target) ## draw  the blue dot
+            pygame.draw.circle(self.screen,self.target_color,self.target) ## draw  the blue dot
+            for module in self.modules:
+                if (module-self.target).norm()<=2.5*self.radius:
+                    pygame.draw.circle(self.screen,(255,0,0),(module.rect.x,module.rect.y),module.radius)
+                    self.target_reward += 1
+            self.reward += self.target_reward
         else:
-            pass ## Draw the relationship joints also
+            reward += self.graph_reward
+            for relation in self.module_queue:
+                if relation[2]<=self.dthreshold:
+                    i ,j = relation[:2]
+                    pygame.draw.line(self.screen,(255,0,0),self.modules[i].get_state()[:2],self.modules[j].get_state()[:2])
+            self.module_queue = []
+        hist = self.fetch_histogram(states)
         done = False
         critic_input = np.array(pygame.surfarray.array3d(self.screen).swapaxes(0,1),dtype=np.uint8).reshape([self.screen_width,self.screen_heigth,3])
         info = {"critic_input":critic_input}
+        self.graph_reward,self.target_reward = 0,0
         return states,reward,done,info
 
 
@@ -89,14 +120,14 @@ class KiloBotEnv(gym.Env):
             pygame.display.init()
         for module in self.modules:
             module.spawn()
-            pygame.draw.circle(self.screen,module.color,(module.rect.x,module.rect.y),module.radius)
         if self.obj:
             self.target = (np.random.randint(self.radius,self.screen_width-self.radius),np.random.randint(self.radius,self.screen_heigth-self.radius))
-            pygame.draw.circle(self.screen,self.BLUE,self.target)
+            pygame.draw.circle(self.screen,self.target_color,self.target)
     def render(self,mode='human',close=False):
         if not pygame.display.get_init() and self.render_mode:
             self.screen = pygame.display.set_mode((self.screen_width,self.screen_heigth))
             pygame.display.set_caption("Swarm")
+            pygame.draw.circle(self.screen,module.color,(module.rect.x,module.rect.y),module.radius)
         elif not self.render_mode:
             raise Exception("You cant render if you have passed its arguement as False")
         pygame.display.flip()
