@@ -17,7 +17,6 @@ def test1():
             env.reset()
             time.sleep(0.05)
     #env.close()
-    del env
     time.sleep(0.2)
     cv2.destroyAllWindows()
     return True
