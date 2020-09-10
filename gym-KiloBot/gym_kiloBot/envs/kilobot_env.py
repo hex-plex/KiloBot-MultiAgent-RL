@@ -4,6 +4,7 @@ from gym.utils import seeding
 import pygame
 import numpy as np
 import cv2
+from .action import Action
 from .arrow import *
 from .kiloBot import KiloBot
 import os
@@ -25,6 +26,7 @@ class KiloBotEnv(gym.Env):
         self.screen_width = screen_width
         self.screen_heigth = screen_heigth
         self.radius = radius
+        self.dummy_action = Action ## This is a class not a object that is stored
         for i in range(n):
             self.modules.append(KiloBot(module_color,
                                     radius,
