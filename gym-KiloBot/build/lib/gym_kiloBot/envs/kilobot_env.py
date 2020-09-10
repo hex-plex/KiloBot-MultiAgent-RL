@@ -13,9 +13,10 @@ class KiloBotEnv(gym.Env):
     metadata={'render.modes':['human']}
     BLACK=(0,0,0);WHITE=(255,255,255);BLUE=(0,0,255);RED=(255,0,0)
     pygame.init()
-    def __init__(self,n=5,objective="graph",render=True,dupper=30,dlower=15,module_color=(0,255,0),radius=5,screen_width=250,screen_heigth=250):
+    def __init__(self,n=5,k=5,objective="graph",render=True,dupper=None,dlower=None,dthreshold=None,sigma=None,module_color=(0,255,0),radius=5,screen_width=250,screen_heigth=250):
         super().__init__()     ##Check it  once never used before
         self.n = n
+        self.k = k
         self.modules = []
         self.render_mode = render
         self.target = (0,0)
@@ -35,9 +36,10 @@ class KiloBotEnv(gym.Env):
         self.module_queue = []
         self.graph_reward = 0
         self.target_reward = 0
-        self.dupper = dupper
-        self.dlower = dlower
-        self.dthreshold = 5*self.radius
+        self.dupper = dupper or 15*self.radius
+        self.dlower = dlower or 4*self.radius
+        self.dthreshold = dthreshold or 12*self.radius
+        self.sigma = sigma or 0.025*self.screen_width
         for i in range(n):
             self.modules.append(KiloBot(module_color,
                                     radius,
@@ -53,11 +55,28 @@ class KiloBotEnv(gym.Env):
                                         high=np.array([[self.radius, 2*np.pi]]*self.n, dtype=np.float32))
         ### This will change with respect to output if its the histogram or the graph or the localization###
         ####################################################################################################
-        self.observation_space = spaces.Box(low = np.array([[0, 0, 0]]*self.n ,dtype=np.float32),
-                                            high = np.array([[self.screen_width, self.screen_heigth, 2*np.pi ]]*self.n , dtype=np.float32))
+        self.observation_space = spaces.Box(low = np.zeros((self.n,self.k)) ,dtype=np.float32,
+                                            high = 2*np.ones((self.n,self.k) , dtype=np.float32))
 
-    def fetch_histogram(self,states):
-        return True
+    def fetch_histogram(self):
+        self.module_queue
+        temphist = [[]]*self.n
+        stepsize = self.dthreshold/self.k
+        steps = [i*stepsize for i in range(1,self.k+1)]
+        for relation in self.module_queue:
+            temphist[relation[0]].append(relation[2])
+            temphist[relation[1]].append(relation[2])
+        temphist = np.array(temphist,dtype=np.float32)
+        histvalues = []
+        for histplot in temphist:
+            temp = []
+            for step in steps:
+                ans = np.sum(np.array(histplot<=self.dthreshold , dtype=np.float32)*(histplot*np.exp(-np.square(histplot - step)/(2*(self.sigma**2)))))
+                temp.append(ans)
+            temp = np.array(temp,dtype=np.float32)
+            temp /= np.sum(temp)
+            histvalues.append(temp)
+        return np.array(histvalues,dtype=np.float32)
 
     def graph_obj_distances(self,states):
         for i in range(self.n):
@@ -100,13 +119,13 @@ class KiloBotEnv(gym.Env):
                 if relation[2]<=self.dthreshold:
                     i ,j = relation[:2]
                     pygame.draw.line(self.screen,(255,0,0),self.modules[i].get_state()[:2],self.modules[j].get_state()[:2])
-            self.module_queue = []
-        hist = self.fetch_histogram(states)
+        hist = self.fetch_histogram()
+        self.module_queue = []
         done = False
         critic_input = np.array(pygame.surfarray.array3d(self.screen).swapaxes(0,1),dtype=np.uint8).reshape([self.screen_width,self.screen_heigth,3])
         info = {"critic_input":critic_input}
         self.graph_reward,self.target_reward = 0,0
-        return states,reward,done,info
+        return hist,reward,done,info
 
 
     def reset(self):

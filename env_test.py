@@ -31,7 +31,7 @@ def test2():
         if i%100==0:
             env.reset()
             time.sleep(0.05)
-        time.sleep(0.1)
+        time.sleep(0.01)
     env.reset()
     env.close()
     time.sleep(0.2)
