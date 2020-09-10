@@ -11,10 +11,11 @@ class KiloBotEnv(gym.Env):
     metadata={'render.modes':['human']}
     BLACK=(0,0,0);WHITE=(255,255,255)
     pygame.init()
-    def __init__(self,n=5,objective="graph",module_color=(0,255,0),radius=5,screen_width=250,screen_heigth=250):
+    def __init__(self,n=5,objective="graph",render=True,module_color=(0,255,0),radius=5,screen_width=250,screen_heigth=250):
         super().__init__()     ##Check it  once never used before
         self.n = n
         self.modules = []
+        self.render_mode = render
         if objective=="localization":
             self.obj = True
         else:
@@ -22,9 +23,6 @@ class KiloBotEnv(gym.Env):
         self.module_color = module_color
         self.screen_width = screen_width
         self.screen_heigth = screen_heigth
-        self.screen = pygame.display.set_mode((self.screen_width,self.screen_heigth))
-        pygame.display.set_caption("Swarm")
-        self.screen.fill(self.BLACK)
         self.radius = radius
         for i in range(n):
             self.modules.append(KiloBot(module_color,
@@ -60,7 +58,7 @@ class KiloBotEnv(gym.Env):
             states.append(module.get_state())
             pygame.draw.circle(self.screen,module.color,(module.rect.x,module.rect.y),module.radius)
             ## Draw a arrow for the same
-            ## Draw A circle around it and draw the Region of interest
+            pygame.draw.circle(self.screen,(0,102,51),(module.rect.x,module.rect.y),30)## Draw A circle around it and draw the Region of interest
         if self.obj:
             pygame.draw.circle(self.screen,self.BLUE,self.target) ## draw  the blue dot
         else:
@@ -72,6 +70,11 @@ class KiloBotEnv(gym.Env):
 
 
     def reset(self):
+        if self.render_mode:
+            self.screen = pygame.display.set_mode((self.screen_width,self.screen_heigth))
+            pygame.display.set_caption("Swarm")
+        else:
+            self.screen = pygame.Surface((self.screen_width,self.screen_heigth))
         self.screen.fill(self.BLACK)
         if not pygame.display.get_init():
             pygame.display.init()
@@ -82,6 +85,11 @@ class KiloBotEnv(gym.Env):
             self.target = (np.random.randint(self.radius,self.screen_width-self.radius),np.random.randint(self.radius,self.screen_heigth-self.radius))
             pygame.draw.circle(self.screen,self.BLUE,self.target)
     def render(self,mode='human',close=False):
+        if not pygame.display.get_init() and self.render_mode:
+            self.screen = pygame.display.set_mode((self.screen_width,self.screen_heigth))
+            pygame.display.set_caption("Swarm")
+        else:
+            raise Exception("You cant render if you have passed its arguement as False")
         pygame.display.flip()
         if mode=="human":
             self.clock.tick(60)
