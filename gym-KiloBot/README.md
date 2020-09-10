@@ -2,6 +2,17 @@
 
 This is a environment which tries simulate many modular bots named kiloBot s , the environement is a Sub Class of OpenAI Gym Env so has a standard member functions.
 
+### Requirements
+``` bash
+pip install --upgrade setuptools wheel numpy gym opencv-python pygame 
+```
+### Installation
+Run commands in this exact directory.
+``` bash
+pip install -e . ## or
+pip install gym-kiloBot
+```
+
 ### Usage
 
 ``` python
