@@ -22,7 +22,7 @@ class KiloBot(pygame.sprite.Sprite):
         self.theta %= 2*np.pi
         self.rect.x = self.rect.x + action.r*(np.cos(self.theta))
         self.rect.x %= self.screen_width
-        self.rect.y = self.rect.y+action.r*(np.sin(self.theta))
+        self.rect.y = self.rect.y + action.r*(np.sin(self.theta))
         self.rect.y %= self.screen_heigth
         return action.r
     def get_state(self):

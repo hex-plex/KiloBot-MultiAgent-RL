@@ -62,15 +62,15 @@ class KiloBotEnv(gym.Env):
             states.append(module.get_state())
             pygame.draw.circle(self.screen,module.color,(module.rect.x,module.rect.y),module.radius)
             pygame.draw.line(self.screen,module.color,(module.rect.x,module.rect.y),
-                                (module.rect.x + self.radius*2*np.cos(module.theta),module.rect.y + self.radius*2*np.sin(module.theta)), width=2)
+                                (module.rect.x + self.radius*2*np.cos(module.theta),module.rect.y + self.radius*2*np.sin(module.theta)),1)
             ## Draw a arrow for the same
-            pygame.draw.circle(self.screen,(0,102,51),(module.rect.x,module.rect.y),3*self.radius)## Draw A circle around it and draw the Region of interest
+            pygame.draw.circle(self.screen,(0,102,51),(module.rect.x,module.rect.y),3*self.radius,2)## Draw A circle around it and draw the Region of interest
         if self.obj:
             pygame.draw.circle(self.screen,self.BLUE,self.target) ## draw  the blue dot
         else:
             pass ## Draw the relationship joints also
         done = False
-        critic_input = np.array(pygame.PixelArray(self.screen),dtype=np.uint8).T.reshape([self.screen_width,self.screen_heigth,1])
+        critic_input = np.array(pygame.surfarray.array3d(self.screen).swapaxes(0,1),dtype=np.uint8).reshape([self.screen_width,self.screen_heigth,3])
         info = {"critic_input":critic_input}
         return states,reward,done,info
 
@@ -94,12 +94,12 @@ class KiloBotEnv(gym.Env):
         if not pygame.display.get_init() and self.render_mode:
             self.screen = pygame.display.set_mode((self.screen_width,self.screen_heigth))
             pygame.display.set_caption("Swarm")
-        else:
+        elif not self.render_mode:
             raise Exception("You cant render if you have passed its arguement as False")
         pygame.display.flip()
         if mode=="human":
             self.clock.tick(60)
 
     def close(self):
-        pygame.display.quit()
-        return True
+        if self.render_mode:
+            pygame.display.quit()

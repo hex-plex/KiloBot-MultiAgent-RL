@@ -1,18 +1,39 @@
 import gym
 import gym_kiloBot
-
-
+import time
+import cv2
 
 def test1():
     print("This should run the env with out any render")
     env = gym.make("kiloBot-v0",n=5,render=False)
-    env.close()
+    env.reset()
+    a = env.dummy_action(0.1,5)
+    for i in range(1000):
+        _,_,_,o=env.step([a]*5)
+        out = o['critic_input']
+        cv2.imshow("asdf",out)
+        cv2.waitKey(10)
+        if i%100==0:
+            env.reset()
+            time.sleep(0.05)
+    #env.close()
+    time.sleep(0.2)
+    cv2.destroyAllWindows()
     return True
 
 def test2():
     print("This should run the env with render")
     env = gym.make("kiloBot-v0")
-    
+    env.reset()
+    a = env.dummy_action(0.1,5)
+    for i in range(1000):
+        env.step([a]*5);env.render();
+        if i%100==0:
+            env.reset()
+            time.sleep(0.05)
+        time.sleep(0.01)
+    # env.close()
+    time.sleep(0.2)
     return True
 
 def test3():
@@ -29,5 +50,5 @@ def test5():
 
 if __name__=="__main__":
     testes = [test1,test2,test3,test4,test5]
-    for i,test in enum(testes):
+    for i,test in enumerate(testes):
         print("test"+str(i)+" - results "+("Passed!" if test() else "Failed!"))
