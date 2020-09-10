@@ -63,8 +63,11 @@ class KiloBotEnv(gym.Env):
             pygame.draw.circle(self.screen,module.color,(module.rect.x,module.rect.y),module.radius)
             pygame.draw.line(self.screen,module.color,(module.rect.x,module.rect.y),
                                 (module.rect.x + self.radius*2*np.cos(module.theta),module.rect.y + self.radius*2*np.sin(module.theta)),1)
-            ## Draw a arrow for the same
-            pygame.draw.circle(self.screen,(0,102,51),(module.rect.x,module.rect.y),3*self.radius,2)## Draw A circle around it and draw the Region of interest
+            nar,nrect = rotate_arrow(self.arrow.copy(),
+                            (module.rect.x + self.radius*2*np.cos(module.theta),module.rect.y + self.radius*2*np.sin(module.theta)),
+                            module.theta)
+            self.screen.blit(nar,(nrect.x,nrect.y))
+            pygame.draw.circle(self.screen,(0,102,51),(module.rect.x,module.rect.y),5*self.radius,2)## Draw A circle around it and draw the Region of interest
         if self.obj:
             pygame.draw.circle(self.screen,self.BLUE,self.target) ## draw  the blue dot
         else:
