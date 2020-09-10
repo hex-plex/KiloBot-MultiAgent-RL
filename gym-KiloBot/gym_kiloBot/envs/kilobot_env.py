@@ -4,6 +4,7 @@ from gym.utils import seeding
 import pygame
 import numpy as np
 import cv2
+from .arrow import *
 from .kiloBot import KiloBot
 import os
 
@@ -34,6 +35,7 @@ class KiloBotEnv(gym.Env):
                                     screen_heigth=self.screen_heigth)
                                     )
         self.clock = pygame.time.Clock()
+        self.arrow = init_arrow(self.module_color)
         self.action_space = spaces.Box(low = np.array([[0,0]]*self.n ,dtype=np.float32) ,
                                         high=np.array([[self.radius, 2*np.pi]]*self.n, dtype=np.float32))
         ### This will change with respect to output if its the histogram or the graph or the localization###
@@ -48,8 +50,8 @@ class KiloBotEnv(gym.Env):
         pass
 
     def step(self,actions):
-        if not pygame.display.get_init():
-            raise Exception("Some problem in the rendering contiivity of the code OpenAI Wrapper messing it up!")
+        if not pygame.display.get_init() and self.render_mode:
+            raise Exception("Some problem in the rendering contiivity of the code OpenAI Wrapper messing it up! or try running reset once at the beginning")
         states=[]
         reward = 0
         self.screen.fill(self.BLACK)
@@ -57,8 +59,10 @@ class KiloBotEnv(gym.Env):
             reward -= 0.05 * module.update(action)
             states.append(module.get_state())
             pygame.draw.circle(self.screen,module.color,(module.rect.x,module.rect.y),module.radius)
+            pygame.draw.line(self.screen,module.color,(module.rect.x,module.rect.y),
+                                (module.rect.x + self.radius*2*np.cos(module.theta),module.rect.y + self.radius*2*np.sin(module.theta)), width=2)
             ## Draw a arrow for the same
-            pygame.draw.circle(self.screen,(0,102,51),(module.rect.x,module.rect.y),30)## Draw A circle around it and draw the Region of interest
+            pygame.draw.circle(self.screen,(0,102,51),(module.rect.x,module.rect.y),3*self.radius)## Draw A circle around it and draw the Region of interest
         if self.obj:
             pygame.draw.circle(self.screen,self.BLUE,self.target) ## draw  the blue dot
         else:
