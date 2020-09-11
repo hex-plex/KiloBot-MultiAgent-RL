@@ -22,7 +22,7 @@ class KiloBotEnv(gym.Env):
         self.target = (0,0)
         if objective=="localization":
             self.obj = True
-            self.target[0],self.target[1] = np.random.randint(0,screen_width-radius),np.random.randint(0,screen_heigth-radius)
+            self.target = (np.random.randint(0,screen_width-radius),np.random.randint(0,screen_heigth-radius))
         else:
             self.obj = False
         self.module_color = module_color
@@ -99,7 +99,8 @@ class KiloBotEnv(gym.Env):
         for module,action in zip(self.modules,actions):
             reward -= 0.05 * module.update(action)
             states.append(module.get_state())
-            pygame.draw.circle(self.screen,module.color,(module.rect.x,module.rect.y),module.radius)
+            if (not self.obj) or (module.l!=1):
+                pygame.draw.circle(self.screen,module.color,(module.rect.x,module.rect.y),module.radius)
             pygame.draw.line(self.screen,module.color,(module.rect.x,module.rect.y),
                                 (module.rect.x + self.radius*2*np.cos(module.theta),module.rect.y + self.radius*2*np.sin(module.theta)),1)
             nar,nrect = rotate_arrow(self.arrow.copy(),
@@ -109,12 +110,13 @@ class KiloBotEnv(gym.Env):
             pygame.draw.circle(self.screen,(0,102,51),(module.rect.x,module.rect.y),5*self.radius,2)## Draw A circle around it and draw the Region of interest
         self.graph_obj_distances()
         if self.obj:
-            pygame.draw.circle(self.screen,self.target_color,self.target) ## draw  the blue dot
+            pygame.draw.circle(self.screen,self.target_color,self.target,self.radius) ## draw  the blue dot
             for module in self.modules:
-                if (module-self.target).norm()<=2.5*self.radius:
+                if module.dist(self.target).norm()<=5*self.radius or module.l==1:
+                    module.l=1
                     pygame.draw.circle(self.screen,(255,0,0),(module.rect.x,module.rect.y),module.radius)
                     self.target_reward += 1
-            self.reward += self.target_reward
+            reward += self.target_reward
         else:
             reward += self.graph_reward
             for relation in self.module_queue:
@@ -143,7 +145,7 @@ class KiloBotEnv(gym.Env):
             module.spawn()
         if self.obj:
             self.target = (np.random.randint(self.radius,self.screen_width-self.radius),np.random.randint(self.radius,self.screen_heigth-self.radius))
-            pygame.draw.circle(self.screen,self.target_color,self.target)
+            pygame.draw.circle(self.screen,self.target_color,self.target,self.radius)
     def render(self,mode='human',close=False):
         if not pygame.display.get_init() and self.render_mode:
             self.screen = pygame.display.set_mode((self.screen_width,self.screen_heigth))

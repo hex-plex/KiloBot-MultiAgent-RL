@@ -17,6 +17,7 @@ class KiloBot(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.x = xinit
         self.rect.y = yinit
+        self.l=0
         if (xinit is None) or  (yinit is None) or (theta is None):
             self.spawn()
     def update(self,action):
@@ -40,6 +41,15 @@ class KiloBot(pygame.sprite.Sprite):
                     xinit=(self.rect.x-other.rect.x),
                     yinit=(self.rect.y-other.rect.y),
                     theta = (self.theta-other.theta),
+                    screen_width=self.screen_width,
+                    screen_heigth=self.screen_heigth
+                    )
+    def dist(self,other):
+        return KiloBot(color=self.color,
+                    radius=self.radius,
+                    xinit=(self.rect.x-other[0]),
+                    yinit=(self.rect.y-other[1]),
+                    theta = self.theta,
                     screen_width=self.screen_width,
                     screen_heigth=self.screen_heigth
                     )
