@@ -2,7 +2,7 @@ import gym
 import gym_kiloBot
 import time
 import cv2
-
+import numpy as np
 def test1():
     print("This should run the env with out any render")
     env = gym.make("kiloBot-v0",n=10,screen_width=500,screen_heigth=500,render=False)
@@ -39,10 +39,41 @@ def test2():
 
 def test3():
     print("This should run the env and be able to fetch all the graphs")
+    env = gym.make("kiloBot-v0",n=10,screen_width=500,screen_heigth=500,radius=5)
+    env.reset()
+    a = env.dummy_action(0.1,5)
+    for i in range(1000):
+        env.step([a]*env.n);env.render();
+        env.graph_obj_distances()
+        print(len(env.module_queue),"\n",env.module_queue)
+        env.module_queue = []
+        if i%100==0:
+            env.reset()
+            time.sleep(0.05)
+        time.sleep(1)
+    env.reset()
+    env.close()
+    time.sleep(0.2)
     return True
 
 def test4():
     print("This should check for the histogram and the optimal region")
+    env = gym.make("kiloBot-v0",n=10,screen_width=500,screen_heigth=500,radius=5)
+    env.reset()
+    a = env.dummy_action(0.1,5)
+    for i in range(1000):
+        env.step([a]*env.n);env.render();
+        env.graph_obj_distances()
+        hist = env.fetch_histogram()
+        print(hist,"\n",hist.shape)
+        env.module_queue = []
+        if i%100==0:
+            env.reset()
+            time.sleep(0.05)
+        time.sleep(5)
+    env.reset()
+    env.close()
+    time.sleep(0.2)
     return True
 
 def test5():
@@ -50,6 +81,7 @@ def test5():
     return True
 
 if __name__=="__main__":
-    testes = [test1,test2,test3,test4,test5]
+    testes = [test1,test2,test3,test4,test5] ## Select the tests that you want to run specifically as you cant have multple pygame session in the same runtime being opened
+    print("I Have not completely designed the test to be user freind but just as a output of the env variable \n \t\t ^\_('_')_/^\n\n ");time.sleep(1)
     for i,test in enumerate(testes):
         print("test"+str(i)+" - results "+("Passed!" if test() else "Failed!"))

@@ -40,6 +40,7 @@ class KiloBotEnv(gym.Env):
         self.dlower = dlower or 4*self.radius
         self.dthreshold = dthreshold or 12*self.radius
         self.sigma = sigma or 0.025*self.screen_width
+        self.epsilon = 1e-4
         for i in range(n):
             self.modules.append(KiloBot(module_color,
                                     radius,
@@ -60,25 +61,26 @@ class KiloBotEnv(gym.Env):
 
     def fetch_histogram(self):
         self.module_queue
-        temphist = [[]]*self.n
+        temphist = [ list([]) for i in range(self.n) ]  ## Dont use [[]]*self.n as it uses same pointer for all the lists and hence they are identical at the end
         stepsize = self.dthreshold/self.k
         steps = [i*stepsize for i in range(1,self.k+1)]
         for relation in self.module_queue:
             temphist[relation[0]].append(relation[2])
             temphist[relation[1]].append(relation[2])
-        temphist = np.array(temphist,dtype=np.float32)
         histvalues = []
         for histplot in temphist:
+            histplot = np.array(histplot,dtype=np.float32)
             temp = []
             for step in steps:
                 ans = np.sum(np.array(histplot<=self.dthreshold , dtype=np.float32)*(histplot*np.exp(-np.square(histplot - step)/(2*(self.sigma**2)))))
                 temp.append(ans)
             temp = np.array(temp,dtype=np.float32)
-            temp /= np.sum(temp)
-            histvalues.append(temp)
+            temp /= (np.sum(temp)+self.epsilon)
+            histvalues.append(temp.copy())
+            del temp
         return np.array(histvalues,dtype=np.float32)
 
-    def graph_obj_distances(self,states):
+    def graph_obj_distances(self):
         for i in range(self.n):
             for j in range(i+1,self.n):
                 tempdst = (self.modules[i]-self.modules[j]).norm()
@@ -105,7 +107,7 @@ class KiloBotEnv(gym.Env):
                             module.theta)
             self.screen.blit(nar,(nrect.x,nrect.y))
             pygame.draw.circle(self.screen,(0,102,51),(module.rect.x,module.rect.y),5*self.radius,2)## Draw A circle around it and draw the Region of interest
-        self.graph_obj_distances(states)
+        self.graph_obj_distances()
         if self.obj:
             pygame.draw.circle(self.screen,self.target_color,self.target) ## draw  the blue dot
             for module in self.modules:
