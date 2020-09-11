@@ -1,2 +1,25 @@
 # KiloBot-MultiAgent-RL
-This experimentation of MultiAgent Reinforcement learning 
+This is an experimentation to learn about MultiAgent Reinforcement learning. We have used KiloBot as a platform as these are very simple in the actions space and have very high degree of symmetry. The Main inspiration of this project is this paper[[1]](#1)
+
+## Setting Up
+``` bash
+git clone https://github.com/hex-plex/KiloBot-MultiAgent-RL
+cd KiloBot-MultiAgent-RL
+pip install -r requirements.txt
+pip install -e gym-kiloBot
+```
+This should fetch and install the basics packages needed and should install the environment
+
+## Usage
+``` bash
+python env-test.py ## This will help you check the functionality of the environement and should give the sample code to understand the apis as well.
+python model-train.py ## This should load the models and train them
+## or
+python model-train.py headless ## for headless training
+
+python play-model.py ## This should load trained weights and show the performance
+```
+
+## References
+<a id="1">[1]</a>
+**Guided Deep Reinforcement Learning for Swarm Systems** [[arXiv:1709.06011v1]](https://arxiv.org/abs/1709.06011) [cs.MA] 18 Sep 2017

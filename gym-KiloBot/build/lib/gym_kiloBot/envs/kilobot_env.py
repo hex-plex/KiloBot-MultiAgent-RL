@@ -36,10 +36,15 @@ class KiloBotEnv(gym.Env):
         self.module_queue = []
         self.graph_reward = 0
         self.target_reward = 0
-        self.dupper = dupper or 15*self.radius
+        self.dupper = dupper or 14*self.radius
         self.dlower = dlower or 4*self.radius
-        self.dthreshold = dthreshold or 12*self.radius
+
         self.sigma = sigma or 0.025*self.screen_width
+        if self.obj:
+            self.dthreshold = dthreshold or 14*self.radius
+        else:
+            self.dthreshold = dthreshold or 16*self.radius
+        self.ring_radius =  0.5*self.dthreshold
         self.epsilon = 1e-4
         for i in range(n):
             self.modules.append(KiloBot(module_color,
@@ -84,9 +89,9 @@ class KiloBotEnv(gym.Env):
         for i in range(self.n):
             for j in range(i+1,self.n):
                 tempdst = (self.modules[i]-self.modules[j]).norm()
-                if tempdst<=self.dupper:
+                if tempdst<=self.dthreshold:
                     self.module_queue.append([i,j,tempdst])
-                    if self.dlower<=tempdst:
+                    if self.dlower<=tempdst<=self.dupper:
                         self.graph_reward += tempdst/10
         return True
 
@@ -107,16 +112,26 @@ class KiloBotEnv(gym.Env):
                             (module.rect.x + self.radius*2*np.cos(module.theta),module.rect.y + self.radius*2*np.sin(module.theta)),
                             module.theta)
             self.screen.blit(nar,(nrect.x,nrect.y))
-            pygame.draw.circle(self.screen,(0,102,51),(module.rect.x,module.rect.y),5*self.radius,2)## Draw A circle around it and draw the Region of interest
+            pygame.draw.circle(self.screen,(0,102,51),(module.rect.x,module.rect.y),int(self.ring_radius),2)## Draw A circle around it and draw the Region of interest
         self.graph_obj_distances()
         if self.obj:
+            mask = [0]*self.n
             pygame.draw.circle(self.screen,self.target_color,self.target,self.radius) ## draw  the blue dot
-            for module in self.modules:
+            for i,module in enumerate(self.modules):
+                if module.dist(self.target).norm()<=self.dthreshold:
+                    mask[i] = 1
                 if module.dist(self.target).norm()<=5*self.radius or module.l==1:
                     module.l=1
                     pygame.draw.circle(self.screen,(255,0,0),(module.rect.x,module.rect.y),module.radius)
                     self.target_reward += 1
             reward += self.target_reward
+            neighbouring_bit = [0]*self.n
+            for relation in self.module_queue:
+                if relation[2]<=self.dthreshold:
+                    if mask[relation[0]]==1:
+                        neighbouring_bit[relation[1]]=1
+                    if mask[relation[1]]==1:
+                        neighbouring_bit[relation[0]]=1
         else:
             reward += self.graph_reward
             for relation in self.module_queue:
@@ -127,7 +142,10 @@ class KiloBotEnv(gym.Env):
         self.module_queue = []
         done = False
         critic_input = np.array(pygame.surfarray.array3d(self.screen).swapaxes(0,1),dtype=np.uint8).reshape([self.screen_width,self.screen_heigth,3])
-        info = {"critic_input":critic_input}
+        info = {"critic_input":critic_input,"localization_bit": [module.l for module in self.modules]}
+        if self.obj:
+            info["target_distance"]= [ module.dist(self.target).norm() if module.dist(self.target).norm()<self.dthreshold else -1 for module in self.modules]
+            info["neighbouring_bit"] = neighbouring_bit
         self.graph_reward,self.target_reward = 0,0
         return hist,reward,done,info
 
