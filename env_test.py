@@ -42,7 +42,7 @@ def test3():
     env = gym.make("kiloBot-v0",n=10,screen_width=500,screen_heigth=500,radius=5)
     env.reset()
     a = env.dummy_action(0.1,5)
-    for i in range(1000):
+    for i in range(500):
         env.step([a]*env.n);env.render();
         env.graph_obj_distances()
         print(len(env.module_queue),"\n",env.module_queue)
@@ -50,7 +50,7 @@ def test3():
         if i%100==0:
             env.reset()
             time.sleep(0.05)
-        time.sleep(1)
+        time.sleep(0.05)
     env.reset()
     env.close()
     time.sleep(0.2)
@@ -61,7 +61,7 @@ def test4():
     env = gym.make("kiloBot-v0",n=10,screen_width=500,screen_heigth=500,radius=5)
     env.reset()
     a = env.dummy_action(0.1,5)
-    for i in range(1000):
+    for i in range(500):
         env.step([a]*env.n);env.render();
         env.graph_obj_distances()
         hist = env.fetch_histogram()
@@ -70,7 +70,7 @@ def test4():
         if i%100==0:
             env.reset()
             time.sleep(0.05)
-        time.sleep(5)
+        time.sleep(0.05)
     env.reset()
     env.close()
     time.sleep(0.2)
@@ -82,8 +82,8 @@ def test5():
     env.reset()
     a = env.dummy_action(0.1,5)
     for i in range(1000):
-        env.step([a]*env.n);env.render();
-        env.module_queue = []
+        observation,reward,done,info = env.step([a]*env.n);env.render();
+        print(info["localization_bit"],"\n",info["target_distance"],"\n",info["neighbouring_bit"])
         if i%100==0:
             env.reset()
             time.sleep(0.05)
@@ -94,7 +94,11 @@ def test5():
     return True
 
 if __name__=="__main__":
-    testes = [test5] ## Select the tests that you want to run specifically as you cant have multple pygame session in the same runtime being opened
+    testes = [test2,test3,test4,test5] ## dont have non render mode with render mode environement in the same session it causes a lot of problem
     print("I Have not completely designed the test to be user freind but just as a output of the env variable \n \t\t ^\_('_')_/^\n\n ");time.sleep(1)
+    result = [0]*len(testes)
     for i,test in enumerate(testes):
-        print("test"+str(i)+" - results "+("Passed!" if test() else "Failed!"))
+        res = test()
+        print("test"+str(i)+" - results "+("Passed!" if res else "Failed!"))
+        result[i] = int(res)
+    print("Passed "+str(sum(result))+"/"+str(len(testes))+" tests !")
