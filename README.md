@@ -22,7 +22,10 @@ python env-test.py ## This will help you check the functionality of the environe
 python model-train.py \
         --headless=True \             ## for headless training default False
         --objective="localization" \  ## defines the objective default is graph
-        --modules=10                  ## This defines the no of modules to be initialized default 10
+        --modules=10 \                ## This defines the no of modules to be initialized default 10
+        --logdir="logs" \             ## This specifies the log location for TensorBoard
+        --checkpoints="checkpoints"   ## This is for defining the location where the model is to be saved
+        --load-checkpoints="checkpoints/iter-500" ## This loads the specified iteration
 
 python play-model.py ## This should load trained weights and show the performance
 ```

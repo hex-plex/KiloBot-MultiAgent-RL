@@ -16,6 +16,9 @@ FLAGS = flags.FLAGS
 flags.DEFINE_boolean("headless",False,"False to render the environment")
 flags.DEFINE_integer("modules",10,"Defines the no of modules in the env")
 flags.DEFINE_string("objective","graph","This defines which task is to be choosen")
+flags.DEFINE_string("logdir","logs","Defines the logging directory")
+flags.DEFINE_string("checkpoints","checkpoints","Defines the directory where model checkpoints are to be saved or loaded from")
+flags.DEFINE_string("load-checpoint",None,"specifies the location of the checkpoint to start training from")
 hyperparam={
     'gamma':0.99, ## Mostly we can try using averaging rewards
     'actor_lr':1e-4,
@@ -50,7 +53,7 @@ def model_actor(input_dims):
     model.compile(optmizer=Adam(lr=hyperparam['actor_lr']),loss=[actor_loss()])
     model.summary()
     return model
-    
+
 def main(argv):
     pass
 
