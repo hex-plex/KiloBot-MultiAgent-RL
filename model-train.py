@@ -140,7 +140,19 @@ class ModelActor(tf.keras.Model):
         grads = tape.gradient(a_loss,self.trainable_variables)
         self.optimizer.apply_gradients(zip(grads,self.trainable_variables))
         return a_loss
+def preprocessReplayBuffer(states,actions,rewards,gamma):
+    discountedRewards = []
+    sum_reward = 0
+    rewards.reverse()
+    for r in rewards:
+        sum_reward = r + gamma*sum_reward
+        discountedRewards.append(sum_reward)
+    discountedRewards.reverse()
+    states = np.array(states, dtype=np.float32)
+    actions = np.array(action, dtype=np.float32)
+    discountedRewards = np.array(discountedRewards,dtype=np.float32)
 
+    return states, actions, discountedRewards
 
 def main(argv):
     pass
