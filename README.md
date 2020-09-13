@@ -9,7 +9,12 @@ pip install -r requirements.txt
 pip install -e gym-kiloBot
 ```
 This should fetch and install the basics packages needed and should install the environment
-
+### Sample of environment
+These envs are running on a constant dummy actions
+<h4>Env with Graph Objective</h4>
+![Output-1](/env_test_graph.gif?raw=true)
+<h4>Env with Localization Objective</h4>
+![Output-1](/env_test_localize.gif?raw=true)
 ## Usage
 ``` bash
 python env-test.py ## This will help you check the functionality of the environement and should give the sample code to understand the apis as well.
@@ -20,7 +25,8 @@ python model-train.py \
 
 python play-model.py ## This should load trained weights and show the performance
 ```
-
+## Training
+This is underconstruction hope to see you on the other side ...... :smile:
 ## References
 <a id="1">[1]</a>
 **Guided Deep Reinforcement Learning for Swarm Systems** [[arXiv:1709.06011v1]](https://arxiv.org/abs/1709.06011) [cs.MA] 18 Sep 2017
