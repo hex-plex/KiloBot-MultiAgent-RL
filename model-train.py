@@ -26,11 +26,46 @@ hyperparam={
     'critic_lr':1e-3,
     'lambda':0.65,
 }
-def actor_loss():
-    def loss(y_true,y_pred):
-        return 0
-    return loss
-class model_critic(tf.keras.Model):
+
+class CustomCallBack(tf.keras.callbacks.Callback):
+
+    def __init__(self,log_dir=None,tag=''):
+        if log_dir is None:
+            raise Exception("No logging directory received")
+        self.writer = tf.summary.FileWriter(log_dir)
+        self.step_number=0
+        self.tag=tag
+        self.info={}
+    def on_epoch_begin(self,epoch,logs=None):
+        print("episode "+str(info.get('episode'))+" step "+str(info.get('step')),end=" "+self.tag+" : ")
+    def on_epoch_end(self,epoch,logs=None):
+        item_to_write={
+            'loss':logs.get('loss')
+            }
+        for name, value in item_to_write.items():
+            summary = tf.summary.Summary()
+            summary_value = summary.value.add()
+            summary_value.simple_value = value
+            summary_value.tag = self.tag+name
+            self.writer.add_summary(summary,self.step_number)
+            self.writer.flush()
+    def inter_post(self,name,value,n=None):
+        summary = tf.summary.Summary()
+        summary_value = summary.value.add()
+        summary_value.simple_value = value
+        summary_value.tag = name
+        if n is None:
+            n = self.step_number
+        self.writer.add_summary(summary,n)
+        self.writer.flush()
+    def step_one(self):
+        self.step_number +=1
+    def __call__(self,tag,info={}):
+        self.tag=tag
+        self.info=info
+        return self
+
+class ModelCritic(tf.keras.Model):
 
     def __init__(self,input_dims):
         super().__init__()
@@ -62,7 +97,7 @@ class model_critic(tf.keras.Model):
         self.optimizer.apply_gradients(zip(grads,self.trainable_variables))
         return td,c_loss
 
-class model_actor(tf.keras.Model):
+class ModelActor(tf.keras.Model):
 
     def __init__(self,input_dims,no_action):
         super().__init__()
