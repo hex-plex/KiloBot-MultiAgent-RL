@@ -14,7 +14,7 @@ These envs are running on a constant dummy actions
 <h4>Env with Graph Objective</h4>
 ![Output-1](/env_test_graph.gif?raw=true)
 <h4>Env with Localization Objective</h4>
-![Output-1](/env_test_localize.gif?raw=true)
+![Output-2](/env_test_localize.gif?raw=true)
 ## Usage
 ``` bash
 python env-test.py ## This will help you check the functionality of the environement and should give the sample code to understand the apis as well.
