@@ -14,7 +14,7 @@ These envs are running on a constant dummy actions
 
 |**Env with Graph Objective**|Env with Localization Objective|
 |--|--|
-|![Output-1](/env_test_graph.gif?raw=true)|![Output-2](/env_test_localize.gif?raw=true)|
+|![Output-1](/env_test_graph_compress.gif?raw=true)|![Output-2](/env_test_localize_compress.gif?raw=true)|
 
 ## Usage
 ``` bash
