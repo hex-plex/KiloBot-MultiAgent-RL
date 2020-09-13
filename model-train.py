@@ -60,7 +60,7 @@ class model_critic(tf.keras.Model):
             c_loss = td**2
         grads = tape.gradient(c_loss,self.trainable_variables)
         self.optimizer.apply_gradients(zip(grads,self.trainable_variables))
-        return c_loss
+        return td,c_loss
 
 class model_actor(tf.keras.Model):
 
@@ -94,6 +94,17 @@ class model_actor(tf.keras.Model):
         action = dist.sample([1])
         return action.numpy()
     def actor_loss(self,probmu,probsigma,actions,td):
+        dist = tfp.distributions.Normal(loc=probmu.numpy(),scale=probsigma.numpy())
+        log_prob = dist.log_prob(actions + 1e-5)
+        loss = -log_prob*td
+        return loss
+    def learn(self,prev_state,action,td):
+        with tf.GradientTape() as tape:
+            pm,ps = self(prev_state,training=True)
+            a_loss = self.actor_loss(pm,ps,action,td)
+        grads = tape.gradient(a_loss,self.trainable_variables)
+        self.optimizer.apply_gradients(zip(grads,self.trainable_variables))
+        return a_loss
 
 
 def main(argv):
