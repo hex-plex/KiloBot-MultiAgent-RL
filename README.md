@@ -11,11 +11,15 @@ pip install -e gym-kiloBot
 This should fetch and install the basics packages needed and should install the environment
 ### Sample of environment
 These envs are running on a constant dummy actions
-#### Env with Graph Objective
-![Output-1](/env_test_graph.gif?raw=true)
-#### Env with Localization Objective
-![Output-2](/env_test_localize.gif?raw=true)
 
+|**Env with Graph Objective**|Env with Localization Objective|
+
+|--|--|
+
+|![Output-1](/env_test_graph.gif?raw=true)
+|
+![Output-2](/env_test_localize.gif?raw=true)
+|
 ## Usage
 ``` bash
 python env-test.py ## This will help you check the functionality of the environement and should give the sample code to understand the apis as well.
