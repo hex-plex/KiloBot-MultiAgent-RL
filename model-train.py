@@ -1,20 +1,39 @@
-import torch
-import torch.nn as nn
-import torch.optim as optim
-import torchvision
-from torchvision import models, transforms
+from absl import app
+from absl import flags
+import tensorflow as tf
+import keras
+from keras.utils import normalize
 import numpy as np
 import gym
 import gym_kiloBot
 
-model_conv = torchvision.models.resnet18(pretrained=True)
-for param in model_conv.parameters():
-    param.requires_grad = False
 
-num_ftrs = model_conv.fc.in_features
-model_conv.fc = nn.Linear(num_ftrs,2)
-model_conv = model_conv.to(device)
-criterion = nn.CrossEntropyLoss()
+FLAGS = flags.FLAGS
+flags.DEFINE_boolean("headless",False,"False to render the environment")
+flags.DEFINE_integer("modules",10,"Defines the no of modules in the env")
+hyperparam={
+    'gamma':0.99, ## Mostly we can try using averaging rewards
+    'actor_lr':1e-4,
+    'critic_lr':1e-3,
+    'lambda':0.65,
+}
+def model_critic(input_dims):
+    state_input=Input(shape=input_dims,name="state_input")
+    x = Dense(512,activation='elu',name='forward1',kernel_initializer=keras.initializers.RandomUniform(minval=-1./512,maxval=1./512))(state_input)
+    x = Dense(256,activation='elu',name='forward2',kernel_initializer=keras.initializers.RandomUniform(minval=-1./256,maxval=1./256))(x)
+    x = Dense(128,activation='elu',name='forward3',kernel_initializer=keras.initializers.RandomUniform(minval=-1./128,maxval=1./128))(x)
+    value_func = Dense(128,activation='linear',name='value_func',kernel_initializer=keras.initializers.RandomUniform(minval=-3e-4,maxval=3e-4))(x)
 
-optimizer_conv = optim.SGD(model_conv.fc.parameters(),lr=0.001,momentum=0.9)
-model_conv = train_model(model_conv,criterion,optimizer_conv,num_epochs=25)
+    model = Model(inputs=[state_input],outputs=[value_func])
+    model.compile(optimizer=Adam(lr=hyperparam['critic_lr']),loss='mse')
+    model.summary()
+    return model
+
+def model_actor(input_dims):
+    pass
+
+def main(argv):
+    pass
+
+if __name__=='__main__':
+    app.run(main)
