@@ -13,9 +13,10 @@ This should fetch and install the basics packages needed and should install the 
 ## Usage
 ``` bash
 python env-test.py ## This will help you check the functionality of the environement and should give the sample code to understand the apis as well.
-python model-train.py ## This should load the models and train them
-## or
-python model-train.py headless ## for headless training
+python model-train.py \
+        --headless=True \             ## for headless training default False
+        --objective="localization" \  ## defines the objective default is graph
+        --modules=10                  ## This defines the no of modules to be initialized default 10
 
 python play-model.py ## This should load trained weights and show the performance
 ```
