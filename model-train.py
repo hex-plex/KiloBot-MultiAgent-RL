@@ -170,7 +170,9 @@ def main(argv):
                     n=FLAGS.modules,
                     k=FLAGS.histRange,
                     render= not FLAGS.headless,
-                    objective=FLAGS.objective
+                    objective=FLAGS.objective,
+                    screen_width=500,
+                    screen_heigth=500
                     )
     custom_callback = CustomCallBack(log_dir=FLAGS.logdir)
     obj = False
@@ -203,17 +205,16 @@ def main(argv):
         if not FLAGS.headless:
             env.render()
         action_inputs = np.squeeze(actor_model.act(prev_state))
-        print(action_inputs)
         actions = []
         for action_input in action_inputs:
             print(action_input)
             actions.append(env.dummy_action(max(min(action_input[0],2*np.pi),-2*np.pi),max(min(action_input[1],10),0)))
         observation,reward,done,info = env.step(actions)
         state,critic_state = fetch_states(observation,info,env)
-        td,critic_error = critic_model.learn(reward,critic_prev_state,critic_state)
+        td,critic_loss = critic_model.learn(reward,critic_prev_state,critic_state)
         actor_loss = actor_model.learn(prev_state,td)
-        custom_callback.inter_post("actor_loss",actor_loss,n=iter)
-        custom_callback.inter_post("critic_loss",critic_loss,n=iter)
+        custom_callback.inter_post("actor_loss",np.mean(actor_loss),n=iter)
+        custom_callback.inter_post("critic_loss",np.mean(critic_loss),n=iter)
         custom_callback.step_one()
         prev_state,critic_prev_state = state,critic_state
         best_reward = max(reward,best_reward)
