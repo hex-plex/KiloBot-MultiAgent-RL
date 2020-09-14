@@ -11,7 +11,7 @@ from keras.callbacks import TensorBoard
 import numpy as np
 import gym
 import gym_kiloBot
-
+import time
 
 FLAGS = flags.FLAGS
 flags.DEFINE_boolean("headless",False,"False to render the environment")
@@ -155,7 +155,19 @@ def preprocessReplayBuffer(states,actions,rewards,gamma):
     discountedRewards = np.array(discountedRewards,dtype=np.float32)
 
     return states, actions, discountedRewards
+def fetch_states_localize(observation,info):
+    prev_state = np.append(np.array(info.get('localization_bit')).reshape(-1,1),
+                            observation,axis=1)
+    prev_state = np.append(np.array(info.get('target_distance')).reshape(-1,1),
+                            prev_state,axis=1)
+    prev_state = np.append(np.array(info.get('neighbouring_bit')).reshape(-1,1),
+                            prev_state,axis=1)
+    critic_prev_state = np.array([module.get_state() in env.modules],dtype=np.float32).reshape(1,-1)
+    critic_prev_state = np.append(np.array(env.target).reshape(1,-1),critic_prev_state)
+    return prev_state,critic_prev_state
 
+def fetch_states_graph(observation,info):
+    
 def main(argv):
     env = gym.make("kiloBot-v0",
                     n=FLAGS.modules,
@@ -164,21 +176,41 @@ def main(argv):
                     objective=FLAGS.objective
                     )
     custom_callback = CustomCallBack(log_dir=FLAGS.logdir)
+    obj = False
     if FLAGS.objective=='localization':
-        actor_model = ModelActor((env.k+3,None),no_action=2)   ## This is k hist features + l + d + b
-        critic_model = ModelCritic((2 + env.n*3,None))         ## This is target x,y and n * agents x y theta
+        actor_model = ModelActor((None,env.k+3),no_action=2)   ## This is k hist features + l + d + b
+        critic_model = ModelCritic((None,2 + env.n*3))         ## This is target x,y and n * agents x y theta
+        obj = True
     else:
-        actor_model = ModelActor((env.k,None),no_action=2)     ## This is just k hist features
-        critic_model = ModelCritic((env.n*3,None))             ## This is n * agents x y theta check ''the comment at the end of the code''
+        actor_model = ModelActor((None,env.k),no_action=2)     ## This is just k hist features
+        critic_model = ModelCritic((None,env.n*3))             ## This is n * agents x y theta check ''the comment at the end of the code''
 
     if FLAGS.load_checkpoint is not None:
         actor_model.load_weights(FLAGS.load_checpoint+"/actor_model.h5")
         critic_model.load_weights(FLAGS.load_checpoint+"/critic_model.h5")
     savepath = FLAGS.checkpoints
     iter = 0
+    env.reset()         ## Doing this ensures the image feed has initialized
+    a = env.dummy_action(0.1,5)
+    observation,_,_,info = env.step([a]*env.n)
+    if obj:
+        prev_state = np.append(np.array(info.get('localization_bit')).reshape(-1,1),
+                                observation,axis=1)
+        prev_state = np.append(np.array(info.get('target_distance')).reshape(-1,1),
+                                prev_state,axis=1)
+        prev_state = np.append(np.array(info.get('neighbouring_bit')).reshape(-1,1),
+                                prev_state,axis=1)
+        critic_prev_state = np.array([module.get_state() in env.modules],dtype=np.float32).reshape(1,-1)
+        critic_prev_state = np.append(np.array(env.target).reshape(1,-1),critic_prev_state)
+    else:
+        prev_state = np.array(observation)
+
+    best_reward = -100000
     while iter<FLAGS.time_steps:
         iter +=1
-        pass
+        if obj:
+            state =
+
 
     env.close()
 

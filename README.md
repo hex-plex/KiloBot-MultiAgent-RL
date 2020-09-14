@@ -23,6 +23,8 @@ python model-train.py \
         --headless=True \             ## for headless training default False
         --objective="localization" \  ## defines the objective default is graph
         --modules=10 \                ## This defines the no of modules to be initialized default 10
+        --time_steps=100000 \         ## This is the total no of steps the agent will take while learning
+        --histRange=10 \              ## This is the no of mu values for the histograms
         --logdir="logs" \             ## This specifies the log location for TensorBoard
         --checkpoints="checkpoints"   ## This is for defining the location where the model is to be saved
         --load-checkpoints="checkpoints/iter-500" ## This loads the specified iteration
