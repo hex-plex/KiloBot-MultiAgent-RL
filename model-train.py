@@ -207,7 +207,6 @@ def main(argv):
         action_inputs = np.squeeze(actor_model.act(prev_state))
         actions = []
         for action_input in action_inputs:
-            print(action_input)
             actions.append(env.dummy_action(max(min(action_input[0],2*np.pi),-2*np.pi),max(min(action_input[1],10),0)))
         observation,reward,done,info = env.step(actions)
         state,critic_state = fetch_states(observation,info,env)
