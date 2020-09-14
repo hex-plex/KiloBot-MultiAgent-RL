@@ -16,11 +16,12 @@ import gym_kiloBot
 FLAGS = flags.FLAGS
 flags.DEFINE_boolean("headless",False,"False to render the environment")
 flags.DEFINE_integer("modules",10,"Defines the no of modules in the env")
+flags.DEFINE_integer("time_steps",10000,"This is the no of steps that the env would take before stoping")
 flags.DEFINE_integer("histRange",10,"Defines the steps for the histograms")
 flags.DEFINE_string("objective","graph","This defines which task is to be choosen")
 flags.DEFINE_string("logdir","logs","Defines the logging directory")
 flags.DEFINE_string("checkpoints","checkpoints","Defines the directory where model checkpoints are to be saved or loaded from")
-flags.DEFINE_string("load_checpoint",None,"specifies the location of the checkpoint to start training from")
+flags.DEFINE_string("load_checkpoint",None,"specifies the location of the checkpoint to start training from")
 hyperparam={
     'gamma':0.99, ## Mostly we can try using averaging rewards
     'actor_lr':1e-4,
@@ -33,7 +34,7 @@ class CustomCallBack(tf.keras.callbacks.Callback):
     def __init__(self,log_dir=None,tag=''):
         if log_dir is None:
             raise Exception("No logging directory received")
-        self.writer = tf.summary.FileWriter(log_dir)
+        self.writer = tf.summary.create_file_writer(log_dir)
         self.step_number=0
         self.tag=tag
         self.info={}
@@ -88,11 +89,11 @@ class ModelCritic(tf.keras.Model):
         self.gamma = gamma
         self.optimizer = Adam(lr=hyperparam['critic_lr'])
 
-    def learn(self,reward,prev_state,state,done):
+    def learn(self,reward,prev_state,state):
         with tf.GradientTape() as tape:
             v_1 = self(prev_state,training=True)
             v = self(state,training=True)
-            td = reward + self.gamma*v(1-np.array(done,dtype=np.int)) - v_1
+            td = reward + self.gamma*v - v_1
             c_loss = td**2
         grads = tape.gradient(c_loss,self.trainable_variables)
         self.optimizer.apply_gradients(zip(grads,self.trainable_variables))
@@ -159,7 +160,7 @@ def main(argv):
     env = gym.make("kiloBot-v0",
                     n=FLAGS.modules,
                     k=FLAGS.histRange,
-                    headless=FLAGS.headless,
+                    render= not FLAGS.headless,
                     objective=FLAGS.objective
                     )
     custom_callback = CustomCallBack(log_dir=FLAGS.logdir)
@@ -174,6 +175,13 @@ def main(argv):
         actor_model.load_weights(FLAGS.load_checpoint+"/actor_model.h5")
         critic_model.load_weights(FLAGS.load_checpoint+"/critic_model.h5")
     savepath = FLAGS.checkpoints
+    iter = 0
+    while iter<FLAGS.time_steps:
+        iter +=1
+        pass
+
+    env.close()
+
 
 if __name__=='__main__':
     app.run(main)
