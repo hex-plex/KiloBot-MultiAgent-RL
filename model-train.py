@@ -16,10 +16,11 @@ import gym_kiloBot
 FLAGS = flags.FLAGS
 flags.DEFINE_boolean("headless",False,"False to render the environment")
 flags.DEFINE_integer("modules",10,"Defines the no of modules in the env")
+flags.DEFINE_integer("histRange",10,"Defines the steps for the histograms")
 flags.DEFINE_string("objective","graph","This defines which task is to be choosen")
 flags.DEFINE_string("logdir","logs","Defines the logging directory")
 flags.DEFINE_string("checkpoints","checkpoints","Defines the directory where model checkpoints are to be saved or loaded from")
-flags.DEFINE_string("load-checpoint",None,"specifies the location of the checkpoint to start training from")
+flags.DEFINE_string("load_checpoint",None,"specifies the location of the checkpoint to start training from")
 hyperparam={
     'gamma':0.99, ## Mostly we can try using averaging rewards
     'actor_lr':1e-4,
@@ -73,7 +74,7 @@ class ModelCritic(tf.keras.Model):
         self.f1 = Dense(512,activation='elu',name='forward1',kernel_initializer=keras.initializers.RandomUniform(minval=-1./512,maxval=1./512))
         self.f2 = Dense(256,activation='elu',name='forward2',kernel_initializer=keras.initializers.RandomUniform(minval=-1./256,maxval=1./256))
         self.f3 = Dense(128,activation='elu',name='forward3',kernel_initializer=keras.initializers.RandomUniform(minval=-1./128,maxval=1./128))
-        self.value_func = Dense(128,activation='linear',name='value_func',kernel_initializer=keras.initializers.RandomUniform(minval=-3e-4,maxval=3e-4))
+        self.value_func = Dense(1,activation='linear',name='value_func',kernel_initializer=keras.initializers.RandomUniform(minval=-3e-4,maxval=3e-4))
 
     def call(self,input_data):
         x = self.state_input(input_data)
@@ -99,7 +100,7 @@ class ModelCritic(tf.keras.Model):
 
 class ModelActor(tf.keras.Model):
 
-    def __init__(self,input_dims,no_action):
+    def __init__(self,input_dims,no_action=2):
         super().__init__()
         self.state_input=Input(shape=input_dims,name="state_input")
         self.fc1 = Dense(1024,activation='elu',name='forward1',kernel_initializer=keras.initializers.RandomUniform(minval=-1./1024,maxval=1./1024))
@@ -155,7 +156,30 @@ def preprocessReplayBuffer(states,actions,rewards,gamma):
     return states, actions, discountedRewards
 
 def main(argv):
-    pass
+    env = gym.make("kiloBot-v0",
+                    n=FLAGS.modules,
+                    k=FLAGS.histRange,
+                    headless=FLAGS.headless,
+                    objective=FLAGS.objective
+                    )
+    custom_callback = CustomCallBack(log_dir=FLAGS.logdir)
+    if FLAGS.objective=='localization':
+        actor_model = ModelActor((env.k+3,None),no_action=2)   ## This is k hist features + l + d + b
+        critic_model = ModelCritic((2 + env.n*3,None))         ## This is target x,y and n * agents x y theta
+    else:
+        actor_model = ModelActor((env.k,None),no_action=2)     ## This is just k hist features
+        critic_model = ModelCritic((env.n*3,None))             ## This is n * agents x y theta check ''the comment at the end of the code''
+
+    if FLAGS.load_checkpoint is not None:
+        actor_model.load_weights(FLAGS.load_checpoint+"/actor_model.h5")
+        critic_model.load_weights(FLAGS.load_checpoint+"/critic_model.h5")
+    savepath = FLAGS.checkpoints
 
 if __name__=='__main__':
     app.run(main)
+
+###########################################################################################
+##### Note: I have not passed norm (a_i) but its still counts in the reward, but that #####
+##### has a low contribution and with a small tolerance the policy would be guided    #####
+#####                           properly by this critic                               #####
+###########################################################################################
