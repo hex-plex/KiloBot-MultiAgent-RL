@@ -10,7 +10,8 @@ pip install --upgrade absl-python \
                       gym \
                       opencv-python \
                       tensorflow_probability \
-                      keras
+                      keras \
+                      pygame
 pip install -e gym-kiloBot
 ```
 This should fetch and install the basics packages needed and should install the environment
