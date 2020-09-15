@@ -171,6 +171,8 @@ def main(argv):
                     k=FLAGS.histRange,
                     render= not FLAGS.headless,
                     objective=FLAGS.objective,
+                    screen_width=500,
+                    screen_heigth=500,
                     )
     custom_callback = CustomCallBack(log_dir=FLAGS.logdir)
     obj = False
@@ -212,6 +214,7 @@ def main(argv):
         actor_loss = actor_model.learn(prev_state,td)
         custom_callback.inter_post("actor_loss",np.mean(actor_loss),n=iter)
         custom_callback.inter_post("critic_loss",np.mean(critic_loss),n=iter)
+        custom_callback.inter_post("reward",reward,n=iter)
         custom_callback.step_one()
         prev_state,critic_prev_state = state,critic_state
         best_reward = max(reward,best_reward)
@@ -220,7 +223,7 @@ def main(argv):
             critic_model.save_weights(savepath+"/critic_model.h5")
             env.reset()
             observation,_,_,info = env.step([a]*env.n)
-            prev_state,critic = fetch_states(observation,info,env)
+            prev_state,critic_prev_state = fetch_states(observation,info,env)
         elif iter%100==0:
             print("iter "+str(iter)+" yeilds reward :"+str(reward))
 
