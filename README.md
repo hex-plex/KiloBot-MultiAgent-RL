@@ -5,7 +5,12 @@ This is an experimentation to learn about Swarm Robotics with help of MultiAgent
 ``` bash
 git clone https://github.com/hex-plex/KiloBot-MultiAgent-RL
 cd KiloBot-MultiAgent-RL
-pip install -r requirements.txt
+pip install --upgrade absl-python \
+                      tensorflow \
+                      gym \
+                      opencv-python \
+                      tensorflow_probability \
+                      keras
 pip install -e gym-kiloBot
 ```
 This should fetch and install the basics packages needed and should install the environment

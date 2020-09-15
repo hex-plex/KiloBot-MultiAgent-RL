@@ -171,8 +171,6 @@ def main(argv):
                     k=FLAGS.histRange,
                     render= not FLAGS.headless,
                     objective=FLAGS.objective,
-                    screen_width=500,
-                    screen_heigth=500
                     )
     custom_callback = CustomCallBack(log_dir=FLAGS.logdir)
     obj = False
