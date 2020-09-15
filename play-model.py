@@ -15,14 +15,12 @@ import time
 import os
 
 FLAGS = flags.FLAGS
-flags.DEFINE_boolean("headless",False,"False to render the environment")
 flags.DEFINE_integer("modules",10,"Defines the no of modules in the env")
 flags.DEFINE_integer("time_steps",10000000,"This is the no of steps that the env would take before stoping")
 flags.DEFINE_integer("histRange",10,"Defines the steps for the histograms")
 flags.DEFINE_string("objective","graph","This defines which task is to be choosen")
-flags.DEFINE_string("logdir","logs","Defines the logging directory")
-flags.DEFINE_string("checkpoints","checkpoints","Defines the directory where model checkpoints are to be saved or loaded from")
 flags.DEFINE_string("load_checkpoint",None,"specifies the location of the checkpoint to start training from")
+flags.mark_as_required('load_checkpoint')
 hyperparam={
     'gamma':0.99, ## Mostly we can try using averaging rewards
     'actor_lr':1e-4,
@@ -106,7 +104,7 @@ def play(argv):
     env = gym.make("kiloBot-v0",
                     n=FLAGS.modules,
                     k=FLAGS.histRange,
-                    render= not FLAGS.headless,
+                    render= True,
                     objective=FLAGS.objective,
                     screen_width=500,
                     screen_heigth=500,
@@ -132,8 +130,7 @@ def play(argv):
     best_reward = -100000
     while iter<FLAGS.time_steps:
         iter +=1
-        if not FLAGS.headless:
-            env.render()
+        env.render()
         action_inputs = np.squeeze(actor_model.act(prev_state))
         actions = []
         for action_input in action_inputs:
