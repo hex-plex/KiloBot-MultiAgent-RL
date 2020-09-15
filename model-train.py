@@ -12,7 +12,7 @@ import numpy as np
 import gym
 import gym_kiloBot
 import time
-
+import os
 FLAGS = flags.FLAGS
 flags.DEFINE_boolean("headless",False,"False to render the environment")
 flags.DEFINE_integer("modules",10,"Defines the no of modules in the env")
@@ -157,8 +157,8 @@ def fetch_states_localize(observation,info,env):
                             prev_state,axis=1)
     prev_state = np.append(np.array(info.get('neighbouring_bit')).reshape(-1,1),
                             prev_state,axis=1)
-    critic_prev_state = np.array([module.get_state() for module in env.modules],dtype=np.float32).reshape(1,-1)
-    critic_prev_state = np.append(np.array(env.target).reshape(1,-1),critic_prev_state)
+    critic_prev_state = np.array([module.get_state(normalized=True) for module in env.modules],dtype=np.float32).reshape(1,-1)
+    critic_prev_state = np.append(np.array((env.target[0]-env.screen_width/2,env.target[1]-env.sceen_height/2)).reshape(1,-1),critic_prev_state)
     return prev_state,critic_prev_state
 
 def fetch_states_graph(observation,info,env):
@@ -183,9 +183,9 @@ def main(argv):
         critic_model = ModelCritic((None,env.n*3))             ## This is n * agents x y theta check ''the comment at the end of the code''
 
     if FLAGS.load_checkpoint is not None:
-        actor_model.load_weights(FLAGS.load_checpoint+"/actor_model.h5")
-        critic_model.load_weights(FLAGS.load_checpoint+"/critic_model.h5")
-    savepath = FLAGS.checkpoints
+        actor_model.load_weights(os.getcwd()+"/"+FLAGS.load_checpoint+"/actor_model.h5")
+        critic_model.load_weights(os.getcwd()+"/"+FLAGS.load_checpoint+"/critic_model.h5")
+    savepath = os.getcwd()+"/"+FLAGS.checkpoints
     iter = 0
     env.reset()         ## Doing this ensures the image feed has initialized
     a = env.dummy_action(0.1,5)
