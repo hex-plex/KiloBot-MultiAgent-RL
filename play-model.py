@@ -20,7 +20,7 @@ flags.DEFINE_integer("time_steps",10000000,"This is the no of steps that the env
 flags.DEFINE_integer("histRange",10,"Defines the steps for the histograms")
 flags.DEFINE_string("objective","graph","This defines which task is to be choosen")
 flags.DEFINE_string("load_checkpoint",None,"specifies the location of the checkpoint to start training from")
-flags.mark_as_required('load_checkpoint')
+flags.mark_flag_as_required('load_checkpoint')
 hyperparam={
     'gamma':0.99, ## Mostly we can try using averaging rewards
     'actor_lr':1e-4,
@@ -116,7 +116,7 @@ def play(argv):
     else:
         actor_model = ModelActor((None,env.k),no_action=2)     ## This is just k hist features
 
-    actor_model.load_weights(os.getcwd()+"/"+FLAGS.load_checpoint+"/actor_model.h5")
+    #actor_model.load_weights(os.getcwd()+"/"+FLAGS.load_checkpoint+"/actor_model.h5")
     iter = 0
     env.reset()         ## Doing this ensures the image feed has initialized
     a = env.dummy_action(0.1,5)
@@ -127,6 +127,8 @@ def play(argv):
         fetch_states = fetch_states_graph
     prev_state,_ = fetch_states(observation,info,env)
     actor_model.setup(gamma=hyperparam['gamma'])
+    actor_model.act(prev_state)
+    actor_model.load_weights(os.getcwd()+"/"+FLAGS.load_checkpoint+"/actor_model.h5")
     best_reward = -100000
     while iter<FLAGS.time_steps:
         iter +=1

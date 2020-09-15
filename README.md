@@ -33,9 +33,14 @@ python model-train.py \
         --histRange=10 \              ## This is the no of mu values for the histograms
         --logdir="logs" \             ## This specifies the log location for TensorBoard
         --checkpoints="checkpoints"   ## This is for defining the location where the model is to be saved
-        --load-checkpoints="checkpoints/iter-500" ## This loads the specified iteration
+        --load_checkpoint="checkpoints/iter-500" ## This loads the specified iteration
 
-python play-model.py ## This should load trained weights and show the performance
+python play-model.py \ ## This should load trained weights and show the performance
+        --load_checkpoint="checkpoints/graphs/10" \ ## loads this model
+        --modules=10  \                             ## no of modules in the env
+        --objective="localization" \                ## Sets the objective function
+        --time_steps=10000 \                        ## No of iterations to be run
+        --histRange=10                              ## Same def as above
 ```
 ## Training
 This is underconstruction hope to see you on the other side ...... :smile:

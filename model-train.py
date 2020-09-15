@@ -185,8 +185,8 @@ def main(argv):
         critic_model = ModelCritic((None,env.n*3))             ## This is n * agents x y theta check ''the comment at the end of the code''
 
     if FLAGS.load_checkpoint is not None:
-        actor_model.load_weights(os.getcwd()+"/"+FLAGS.load_checpoint+"/actor_model.h5")
-        critic_model.load_weights(os.getcwd()+"/"+FLAGS.load_checpoint+"/critic_model.h5")
+        actor_model.load_weights(os.getcwd()+"/"+FLAGS.load_checkpoint+"/actor_model.h5")
+        critic_model.load_weights(os.getcwd()+"/"+FLAGS.load_checkpoint+"/critic_model.h5")
     savepath = os.getcwd()+"/"+FLAGS.checkpoints
     iter = 0
     env.reset()         ## Doing this ensures the image feed has initialized
