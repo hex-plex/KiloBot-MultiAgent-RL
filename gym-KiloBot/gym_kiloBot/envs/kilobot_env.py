@@ -157,7 +157,7 @@ class KiloBotEnv(gym.Env):
         else:
             self.screen = pygame.Surface((self.screen_width,self.screen_heigth))
         self.screen.fill(self.BLACK)
-        if not pygame.display.get_init():
+        if self.render_mode and (not pygame.display.get_init()):
             pygame.display.init()
         for module in self.modules:
             module.spawn()
