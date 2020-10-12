@@ -102,7 +102,7 @@ class KiloBotEnv(gym.Env):
         reward = 0
         self.screen.fill(self.BLACK)
         for module,action in zip(self.modules,actions):
-            reward -= 0.05 * module.update(action)
+            reward -= 0.0005 * module.update(action)
             states.append(module.get_state())
             if (not self.obj) or (module.l!=1):
                 pygame.draw.circle(self.screen,module.color,(module.rect.x,module.rect.y),module.radius)
