@@ -147,6 +147,9 @@ def play(argv):
             prev_state,_ = fetch_states(observation,info,env)
         if iter%100==0:
             print("iter "+str(iter)+" yeilds reward :"+str(reward))
+        if done:
+            env.reset()
+            prev_state,critic_prev_state = fetch_states(observation,info,env)
     env.close()
 
 

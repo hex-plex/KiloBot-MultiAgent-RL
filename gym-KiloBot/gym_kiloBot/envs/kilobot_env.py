@@ -140,7 +140,10 @@ class KiloBotEnv(gym.Env):
                     pygame.draw.line(self.screen,(255,0,0),self.modules[i].get_state()[:2],self.modules[j].get_state()[:2])
         hist = self.fetch_histogram()
         self.module_queue = []
-        done = False
+        if self.objective=='localization' and reward>(self.n - 1):
+            done = True
+        else:
+            done = False
         critic_input = np.array(pygame.surfarray.array3d(self.screen).swapaxes(0,1),dtype=np.uint8).reshape([self.screen_width,self.screen_heigth,3])
         info = {"critic_input":critic_input,"localization_bit": [module.l for module in self.modules]}
         if self.obj:

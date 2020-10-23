@@ -226,6 +226,9 @@ def main(argv):
             prev_state,critic_prev_state = fetch_states(observation,info,env)
         elif iter%100==0:
             print("iter "+str(iter)+" yeilds reward :"+str(reward))
+        if done:
+            env.reset()
+            prev_state,critic_prev_state = fetch_states(observation,info,env)
 
     env.close()
 
