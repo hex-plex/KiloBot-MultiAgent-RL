@@ -102,7 +102,7 @@ class KiloBotEnv(gym.Env):
         reward = 0
         self.screen.fill(self.BLACK)
         for module,action in zip(self.modules,actions):
-            reward -= 0.05 * module.update(action)
+            reward -= 0.0005 * module.update(action)
             states.append(module.get_state())
             if (not self.obj) or (module.l!=1):
                 pygame.draw.circle(self.screen,module.color,(module.rect.x,module.rect.y),module.radius)
@@ -140,7 +140,10 @@ class KiloBotEnv(gym.Env):
                     pygame.draw.line(self.screen,(255,0,0),self.modules[i].get_state()[:2],self.modules[j].get_state()[:2])
         hist = self.fetch_histogram()
         self.module_queue = []
-        done = False
+        if self.objective=='localization' and reward>(self.n - 1):
+            done = True
+        else:
+            done = False
         critic_input = np.array(pygame.surfarray.array3d(self.screen).swapaxes(0,1),dtype=np.uint8).reshape([self.screen_width,self.screen_heigth,3])
         info = {"critic_input":critic_input,"localization_bit": [module.l for module in self.modules]}
         if self.obj:
@@ -157,7 +160,7 @@ class KiloBotEnv(gym.Env):
         else:
             self.screen = pygame.Surface((self.screen_width,self.screen_heigth))
         self.screen.fill(self.BLACK)
-        if not pygame.display.get_init():
+        if self.render_mode and (not pygame.display.get_init()):
             pygame.display.init()
         for module in self.modules:
             module.spawn()

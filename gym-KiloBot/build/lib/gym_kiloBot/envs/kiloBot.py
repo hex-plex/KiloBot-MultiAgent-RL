@@ -28,8 +28,11 @@ class KiloBot(pygame.sprite.Sprite):
         self.rect.y = self.rect.y + action.r*(np.sin(self.theta))
         self.rect.y %= self.screen_heigth
         return action.r
-    def get_state(self):
-        return (self.rect.x,self.rect.y,self.theta)
+    def get_state(self,normalized=False):
+        if normalized:
+            return (self.rect.x-(self.screen_width/2),self.rect.y-(self.screen_heigth/2),self.theta)
+        else:
+            return (self.rect.x,self.rect.y,self.theta)
     def spawn(self):
         self.rect.x = randint(0,self.screen_width-1)
         self.rect.y = randint(0,self.screen_heigth-1)
