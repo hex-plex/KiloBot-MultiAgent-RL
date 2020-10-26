@@ -140,7 +140,7 @@ class KiloBotEnv(gym.Env):
                     pygame.draw.line(self.screen,(255,0,0),self.modules[i].get_state()[:2],self.modules[j].get_state()[:2])
         hist = self.fetch_histogram()
         self.module_queue = []
-        if self.objective=='localization' and reward>(self.n - 1):
+        if self.obj and reward>(self.n - 1):
             done = True
         else:
             done = False
