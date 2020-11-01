@@ -167,6 +167,8 @@ class KiloBotEnv(gym.Env):
         if self.obj:
             self.target = (np.random.randint(self.radius,self.screen_width-self.radius),np.random.randint(self.radius,self.screen_heigth-self.radius))
             pygame.draw.circle(self.screen,self.target_color,self.target,self.radius)
+            for module in self.modules:
+                module.l = 0
     def render(self,mode='human',close=False):
         if not pygame.display.get_init() and self.render_mode:
             self.screen = pygame.display.set_mode((self.screen_width,self.screen_heigth))
