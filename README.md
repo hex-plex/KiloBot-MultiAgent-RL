@@ -16,11 +16,11 @@ pip install -e gym-kiloBot
 ```
 This should fetch and install the basics packages needed and should install the environment
 ### Sample of environment
-These envs are running on a constant dummy actions
+These envs are running on a constant **Dummy-actions!!**
 
 |**Env with Graph Objective**|Env with Localization Objective|
 |--|--|
-|![Output-1](/env_test_graph_compress.gif?raw=true)|![Output-2](/env_test_localize_compress.gif?raw=true)|
+|![Output-1](images/env_test_graph_compress.gif?raw=true)|![Output-2](images/env_test_localize_compress.gif?raw=true)|
 
 ## Usage
 ``` bash
@@ -42,8 +42,32 @@ python play-model.py \ ## This should load trained weights and show the performa
         --time_steps=10000 \                        ## No of iterations to be run
         --histRange=10                              ## Same def as above
 ```
-## Training
-This is underconstruction hope to see you on the other side ...... :smile:
+## Results
+After a exhaustive amount of training on varies combinations of no_of_modules and task in hand I have obtained results of the following algorithm for these parameters.
+I have used ``` [5, 10, 15, 20, 25, 50] ``` number of modules to carryout the tests.
+
+One may find the Tensorboard log files here:
+
+[ log_kilobot [Drive Link] (403MB)](https://drive.google.com/file/d/11NtimYoXOBGopIxziAojti0k1kfbaVBQ/view?usp=sharing)
+
+and the Model Weights for each parameters here:
+
+[ checkpoint_kilobot [Drive Link] (63.3MB)](https://drive.google.com/file/d/12qpbPIOrC-hLGVn2a8GETrkNL89bt8Dt/view?usp=sharing)
+#### Graph Problem
+The below table is based on the number of modules used but for result tabulation I am considering
+``` [5, 10, 20, 50] ```
+number of modules. To infer many insights of the algorithm in hand.
+
+|Model Trained on **\** Model Run on|5|10|20|50|
+|--|--|--|--|--|
+|5|![Failed](images/5trainon5.gif?raw=true)| - | - | - |
+|10| - | ![Success1](images/10trainon10.gif?raw=true)|![Success2](images/10trainon20.gif?raw=true)| ![Success3](images/10trainon50.gif?raw=true) |
+|20| - | - | ![Random1](images/20trainon20.gif?raw=true) | - |
+|50| - | - | - | ![Random2](images/50trainon50.gif?raw=true) |
+
+We can see clearly the policy trained with 10 modules have yield a very good amount of coordination 
+#### Localization Problem
+
 ## References
 <a id="1">[1]</a>
 **Guided Deep Reinforcement Learning for Swarm Systems** [[arXiv:1709.06011v1]](https://arxiv.org/abs/1709.06011) [cs.MA] 18 Sep 2017
