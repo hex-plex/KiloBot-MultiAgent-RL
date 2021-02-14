@@ -94,7 +94,7 @@ The system can't comphensate for the negetive reward got by using fuel as the re
 
 ### Localization Problem
 Here the task was much easier but the training didnt yield any satisfactory result as.
-- there were a lot of non stationarities and the fact the system was modelled based on a fashion which couldn't extend more than a small system of at best 10 modules <a href="1">[1]</a>.
+- there were a lot of non stationarities and the fact the system was modelled based on a fashion which couldn't extend more than a small system of at best 10 modules <a href="#1">[1]</a>.
 - And the fact that the reward of localization couldnt exceed the negetive reward for moving the bot that is the bots choose to stand still to save fuel over exploring in most of the senarios.
 
 Below are few runs with ```[10, 25]```
