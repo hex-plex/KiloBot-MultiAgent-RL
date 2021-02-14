@@ -74,7 +74,7 @@ Hence the Model trained with 10 modules is not able to generalize to the 50 modu
 
 |Actor Loss| Critic Loss | Reward|
 |--|--|--|
-|![Actor Loss](images/actor10.jpg?raw=true)|![Critic Loss](images/critic10.png?raw=true)|![Reward](images/reward10.jpg?raw=true)|
+|![Actor Loss](images/actor10.jpg?raw=true)|![Critic Loss](images/critic10.jpg?raw=true)|![Reward](images/reward10.jpg?raw=true)|
 
 
 ### Localization Problem
