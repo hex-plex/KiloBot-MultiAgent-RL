@@ -3,5 +3,4 @@ env_test_graph.avi
 env_test_localize.avi
 checkpoints/
 logs/
-!logs/events.out.tfevents.1600072795.hexplex0xff.6669.5.v2.sample
 checkgraph/
