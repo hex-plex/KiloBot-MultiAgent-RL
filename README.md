@@ -53,20 +53,31 @@ One may find the Tensorboard log files here:
 and the Model Weights for each parameters here:
 
 [ checkpoint_kilobot [Drive Link] (63.3MB)](https://drive.google.com/file/d/12qpbPIOrC-hLGVn2a8GETrkNL89bt8Dt/view?usp=sharing)
-#### Graph Problem
+### Graph Problem
 The below table is based on the number of modules used but for result tabulation I am considering
 ``` [5, 10, 20, 50] ```
 number of modules. To infer many insights of the algorithm in hand.
 
-|Model Trained on **\** Model Run on|5|10|20|50|
+|Model Trained on **\\** Model Run on|5|10|20|50|
 |--|--|--|--|--|
 |5|![Failed](images/5trainon5.gif?raw=true)| - | - | - |
 |10| - | ![Success1](images/10trainon10.gif?raw=true)|![Success2](images/10trainon20.gif?raw=true)| ![Success3](images/10trainon50.gif?raw=true) |
 |20| - | - | ![Random1](images/20trainon20.gif?raw=true) | - |
 |50| - | - | - | ![Random2](images/50trainon50.gif?raw=true) |
 
-We can see clearly the policy trained with 10 modules have yield a very good amount of coordination 
-#### Localization Problem
+We can see clearly the policy trained with 10 modules have yield a very good amount of coordination between each other that is the critic model taking in the input image of the system is able to specify the bots and guide them, Hence a very good amount of generalization is found when we use this model with system with different number of modules as can be seen with the 20 module system but the non stationarity of a higher order system makes it complex for the critic to reward or give baseline to the actor, As the
+- The order of the reward changes drastically.
+- The Reading from the histogram becomes Muddy.
+- The correlation of a reward to action of a single agent reduces drastically.
+Hence the Model trained with 10 modules is not able to generalize to the 50 module system, **BUT** It looks more promising than the policy trained for the 50 module system itself, hence a curiculum learning based approach seems promising to solve such a transfer learning problem.
+#### Plots for Training with 10 modules
+
+|Actor Loss| Critic Loss | Reward|
+|--|--|--|
+|![Actor Loss](images/actor10.jpg?raw=true)|![Critic Loss](images/critic10.png?raw=true)|![Reward](images/reward10.jpg?raw=true)|
+
+
+### Localization Problem
 
 ## References
 <a id="1">[1]</a>
