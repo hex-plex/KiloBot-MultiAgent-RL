@@ -60,12 +60,11 @@ number of modules. To infer many insights of the algorithm in hand.
 
 <p align="center"><b>Please click on the image to zoom in</b></p>
 
-|Model Trained on **\\** Model Run on|5|10|20|50|
-|--|--|--|--|--|
-|5|![Failed](images/5trainon5.gif?raw=true)| - | - | - |
-|10| - | ![Success1](images/10trainon10.gif?raw=true)|![Success2](images/10trainon20.gif?raw=true)| ![Success3](images/10trainon50.gif?raw=true) |
-|20| - | - | ![Random1](images/20trainon20.gif?raw=true) | - |
-|50| - | - | - | ![Random2](images/50trainon50.gif?raw=true) |
+|Model Trained on **\\** Model Run on|10|20|50|
+|--|--|--|--|
+|10| ![Success1](images/10trainon10.gif?raw=true)|![Success2](images/10trainon20.gif?raw=true)| ![Success3](images/10trainon50.gif?raw=true) |
+|20| - | ![Random1](images/20trainon20.gif?raw=true) | - |
+|50| - | - | ![Random2](images/50trainon50.gif?raw=true) |
 
 <hr>
 The policies trained on 20 and 50 module system is completely random in sense it just goes forward.
@@ -78,11 +77,18 @@ We can see clearly the policy trained with 10 modules have yield a very good amo
 <hr>
 
 Hence the Model trained with 10 modules is not able to generalize to the 50 module system, **BUT** It looks more promising than the policy trained for the 50 module system itself, hence a curiculum learning based approach seems promising to solve such a transfer learning problem.
+
 #### Plots for Training with 10 modules
 
 |Actor Loss| Critic Loss | Reward|
 |--|--|--|
 |![Actor Loss](images/actor10.jpg?raw=true)|![Critic Loss](images/critic10.jpg?raw=true)|![Reward](images/reward10.jpg?raw=true)|
+
+<hr>
+
+#### For 5 modules
+The system can't comphensate for the negetive reward got by using fuel as the reward got for graphing is much smaller in order than it that it chooses to be stagnent.
+![Failed](images/5trainon5.gif?raw=true)
 
 <hr>
 
