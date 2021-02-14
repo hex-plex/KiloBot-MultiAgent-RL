@@ -93,7 +93,7 @@ def fetch_states_localize(observation,info,env):
     prev_state = np.append(np.array(info.get('neighbouring_bit')).reshape(-1,1),
                             prev_state,axis=1)
     critic_prev_state = np.array([module.get_state(normalized=True) for module in env.modules],dtype=np.float32).reshape(1,-1)
-    critic_prev_state = np.append(np.array((env.target[0]-env.screen_width/2,env.target[1]-env.sceen_height/2)).reshape(1,-1),critic_prev_state)
+    critic_prev_state = np.append(np.array((env.target[0]-env.screen_width/2,env.target[1]-env.screen_heigth/2)).reshape(1,-1),critic_prev_state)
     return prev_state,critic_prev_state
 
 def fetch_states_graph(observation,info,env):
